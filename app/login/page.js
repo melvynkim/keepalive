@@ -24,6 +24,7 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Ensure cookies are set
         body: JSON.stringify({ password }),
       });
 
@@ -63,8 +64,9 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect to admin dashboard
-      router.push('/admin');
+      // Successful login - redirect to admin dashboard
+      // Use router.replace to avoid back button issues
+      router.replace('/admin');
     } catch (err) {
       setError('An error occurred. Please try again.');
       setLoading(false);
@@ -77,7 +79,6 @@ export default function LoginPage() {
         <div className="card">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900">KeepAlive Manager</h1>
-            <p className="text-sm text-gray-600 mt-2">Admin Access Only</p>
           </div>
 
           {isBlocked ? (
@@ -104,7 +105,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label htmlFor="password" className="label">
-                  Admin Password
+                  Password
                 </label>
                 <input
                   type="password"
@@ -112,7 +113,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input"
-                  placeholder="Enter admin password"
+                  placeholder="Enter password"
                   required
                   autoFocus
                   disabled={loading || lockoutInfo}
@@ -158,11 +159,6 @@ export default function LoginPage() {
               >
                 {loading ? 'Logging in...' : lockoutInfo ? 'Locked Out' : 'Login'}
               </button>
-
-              <div className="mt-4 text-center text-xs text-gray-500">
-                <p>Protected by rate limiting and exponential backoff</p>
-                <p className="mt-1">3 attempts before lockout</p>
-              </div>
             </form>
           )}
         </div>

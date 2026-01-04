@@ -28,7 +28,10 @@ export default function AdminPage() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include', // Ensure cookies are sent
+        cache: 'no-store', // Don't cache auth checks
+      });
       const data = await response.json();
 
       if (!data.authenticated) {
@@ -38,13 +41,17 @@ export default function AdminPage() {
 
       setLoading(false);
     } catch (error) {
+      console.error('Auth check failed:', error);
       router.push('/login');
     }
   };
 
   const loadTargets = async () => {
     try {
-      const response = await fetch('/api/targets');
+      const response = await fetch('/api/targets', {
+        credentials: 'include',
+        cache: 'no-store',
+      });
       const data = await response.json();
 
       if (data.ok) {
@@ -57,10 +64,14 @@ export default function AdminPage() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      router.push('/login');
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      router.replace('/login');
     } catch (error) {
       console.error('Logout failed:', error);
+      router.replace('/login');
     }
   };
 
@@ -105,8 +116,11 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }
