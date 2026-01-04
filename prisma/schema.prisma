@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Target {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // Always "postgresql" for now
+  credentials String   // Encrypted JSON
+  isActive    Boolean  @default(true)
+  frequency   String   @default("daily") // daily, 12h, 6h, 1h
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  runItems    RunItem[]
+
+  @@index([isActive])
+}
+
+model Run {
+  id           String   @id @default(uuid())
+  triggerType  String   // "cron" | "manual"
+  status       String   // "running" | "completed" | "failed"
+  startedAt    DateTime @default(now())
+  finishedAt   DateTime?
+
+  runItems     RunItem[]
+
+  @@index([startedAt])
+}
+
+model RunItem {
+  id           String   @id @default(uuid())
+  runId        String
+  targetId     String
+  status       String   // "success" | "failure"
+  durationMs   Int?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  run          Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  target       Target   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([targetId])
+  @@index([createdAt])
+}
