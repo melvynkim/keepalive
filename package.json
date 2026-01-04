@@ -1,0 +1,14 @@
+{
+  "name": "vercel-keepalive",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Vercel Cron -> ping Neon Postgres + Upstash Redis targets",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@upstash/redis": "^1.36.0"
+  }
+}
